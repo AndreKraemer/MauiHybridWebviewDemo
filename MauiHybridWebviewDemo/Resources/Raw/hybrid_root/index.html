@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="_hwv/HybridWebView.js"></script>
+    <script src="myapp.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <main>
+            <div class="row g-3">
+                <div class="col-12">
+                    <h1>.NET MAUI Hybrid WebView</h1>
+                    <label for="messageInput" class="text-body-secondary">Deine Nachricht: </label>
+                    <input type="text" class="form-control" id="messageInput" placeholder="Hier bitte den Text eingeben" />
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary" onclick="SendMessageToCSharp()">An C#-Host senden</button>
+                    <button class="btn btn-secondary" onclick="OpenCamera()">Kamera öffnen</button>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-12">
+                    <image id="photo" class="img-fluid"/>
+                </div>
+
+            </div>
+        </main>
+        </div>
+</body>
+</html>

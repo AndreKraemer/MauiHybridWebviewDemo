@@ -2,23 +2,58 @@
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+
 
 	public MainPage()
 	{
 		InitializeComponent();
 	}
 
-	private void OnCounterClicked(object sender, EventArgs e)
-	{
-		count++;
+    private async void OnHybridWebViewRawMessageReceived(object sender, HybridWebView.HybridWebViewRawMessageReceivedEventArgs e)
+    {
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
+        if(e.Message == "open_camera")
+        {
+            await Dispatcher.DispatchAsync(async () =>
+            {
+                if (MediaPicker.Default.IsCaptureSupported)
+                {
+                    FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
-	}
+                    if (photo != null)
+                    {
+                        // save the file into local storage
+                        string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+                        using Stream sourceStream = await photo.OpenReadAsync();
+                        using FileStream localFileStream = File.OpenWrite(localFilePath);
+                        await sourceStream.CopyToAsync(localFileStream);
+
+                        // convert the file into base64 string
+                        byte[] byteArray;
+                        using (MemoryStream stream = new MemoryStream())
+                        {   sourceStream.Position = 0;
+                            await sourceStream.CopyToAsync(stream);
+                            byteArray = stream.ToArray();
+                        }
+                        string base64String = Convert.ToBase64String(byteArray);
+
+                        // Display the image in the HybridWebview
+                        await myHybridWebview.InvokeJsMethodAsync("DisplayPhoto", base64String);
+
+                    }
+                    else
+                    {
+                        await DisplayAlert("Error", "An error occured while taking the photo.", "OK");
+                    }
+                }
+            });
+            return;
+        }
+
+        await Dispatcher.DispatchAsync(async () =>
+        {
+            await DisplayAlert("Message from JavaScript in C#!", e.Message, "OK");
+        });
+    }
 }
 
